@@ -1,0 +1,34 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+resources:
+ repositories:
+  - repository: repoDeploy
+    type: git
+    name: namernews/deploy
+
+trigger:
+  branches: 
+    include:
+    - '*'
+  batch: true
+
+pool:
+  vmImage: ubuntu-16.04
+
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: ubuntu-16.04
+    steps:
+      - template: docker.yml@repoDeploy
+        parameters:
+          imagename: 'hs-id-provider'
+
+# - template: azure-pipelines.yml@repoDeploy
+#   parameters:
+#     repository: '866123855895.dkr.ecr.us-east-2.amazonaws.com/hs-id-provider'
