@@ -46,7 +46,7 @@ router.get('/interaction/:uid', setNoCache, async (req, res, next) => {
 router.post('/interaction/:uid/manager', setNoCache, body, async (req, res, next) => {
   const { uid, prompt, params, session } = await oidc.interactionDetails(req, res);
 
-  let id = hnsUtils.atob(req.body.id);
+  let id = req.body.id;
   let managers = await hnsUtils.getRecordsAsync('_idmanager.' + id);
   let baseUrl = `https://id.namebase.io`;
   if (managers.length > 0) {
@@ -54,11 +54,12 @@ router.post('/interaction/:uid/manager', setNoCache, body, async (req, res, next
   }
   const url = new URL(baseUrl);
   const data = {
-    action: `/interaction/${uid}/login`,
+    referrer: req.protocol + '://' + req.get('host'),
+    action: `/oidc/interaction/${uid}/login`,
     state: req.session.state,
     id
   };
-  url.searchParams.append('data', hnsUtils.btoa(JSON.stringify(data)))
+  url.hash = `#/login?state=${hnsUtils.btoa(data.state)}&action=${hnsUtils.btoa(data.action)}&id=${hnsUtils.btoa(data.id)}&referrer=${hnsUtils.btoa(data.referrer)}`
   res.redirect(url.toString());
 
 });
