@@ -18,6 +18,7 @@
 		margin: 0 auto;
 		max-width: 100%;
 		position: relative;
+		margin-top: 80px;
 		padding-left: 16px;
 		padding-right: 16px;
 	}
@@ -25,7 +26,6 @@
 	.handshake-logo {
 		width: max-content;
 		margin: 0 auto;
-		padding-top: 80px;
 		padding-bottom: 32px;
 	}
 </style>
