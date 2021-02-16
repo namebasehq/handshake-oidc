@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import BackArrow from '../../components/BackArrow.svelte';
+	import BackArrowIcon from '../../components/BackArrowIcon.svelte';
 	import TextInput from '../../components/TextInput.svelte';
 
 	const LOCAL_STORAGE_KEY = 'namebase:oidc:names:cached';
@@ -90,7 +90,7 @@
 					on:click={() => (showNewIdentityScreen = false)}
 					style="position: absolute; top: 0; left: 0;"
 				>
-					<BackArrow />
+					<BackArrowIcon />
 				</button>
 			{/if}
 		{:else}
@@ -108,7 +108,7 @@
 				{/each}
 				<li>
 					<button class="existing-id-button" on:click={() => (showNewIdentityScreen = true)}>
-						+ Setup another identity
+						{'+  Setup another identity}'}
 					</button>
 				</li>
 			</ul>

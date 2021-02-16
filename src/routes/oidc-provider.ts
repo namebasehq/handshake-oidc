@@ -45,7 +45,7 @@ router.get('/interaction/:uid', setNoCache, async (req, res, next) => {
 });
 router.post('/interaction/:uid/manager', setNoCache, body, async (req, res, next) => {
   const { uid, prompt, params, session } = await oidc.interactionDetails(req, res);
-  
+
   let id = hnsUtils.atob(req.body.id);
   let managers = await hnsUtils.getRecordsAsync('_idmanager.' + id);
   let baseUrl = `https://id.namebase.io`;
