@@ -7,7 +7,7 @@ import {
 } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
 import { config } from './config';
-import configurePolicyToSkip from './skip-policy';
+import { skipPolicy } from './skip-policy';
 import { RedisAdapter } from './redis-adapter';
 
 // create a requestable prompt with no implicit checks
@@ -33,7 +33,7 @@ const audiences = (
   ctx: KoaContextWithOIDC,
   sub: string | undefined,
   token: any,
-  use: 'access_token' | 'client_credentials'
+  use: 'access_token' | 'client_credentials',
 ): CanBePromise<false | string | string[]> => {
   const client = config.oidc_provider_clients.find((c) => c.client_id == token?.clientId);
   return client?.audience;
@@ -97,6 +97,6 @@ const configuration: Configuration = {
 const oidc = new Provider(`https://${config.host}/`, configuration);
 oidc.proxy = true;
 
-configurePolicyToSkip(oidc);
+skipPolicy(oidc);
 
 export default oidc;

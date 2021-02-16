@@ -8,23 +8,15 @@ import session from 'express-session';
 import helmet from 'helmet';
 import oidcProviderRouter from './routes/oidc-provider';
 import path from 'path';
-
 import logger from 'morgan';
 import cors from 'cors';
 import { redis } from './redis-client';
-
 import { config } from './config';
-
 import rateLimit from 'express-rate-limit';
-
 import * as Sentry from '@sentry/node';
-
 import { RewriteFrames } from '@sentry/integrations';
 
-
-export type SapperSession = {
-
-};
+export type SapperSession = {};
 
 const rootDir = __dirname ?? process.cwd();
 
@@ -47,24 +39,17 @@ export function setupPreMiddlewares(app) {
 		],
 	});
 
-	app.use(Sentry.Handlers.requestHandler());
-
 	const RedisStore = redisConnect(session);
-
-	app.set('trust proxy', true);
-	app.use(
-		helmet({
-			contentSecurityPolicy: false,
-		})
-	);
-	app.use(cors());
-
 	const limiter = rateLimit({
 		windowMs: 15 * 60 * 1000, // 15 minutes
 		max: 100, // limit each IP to 100 requests per windowMs
 	});
-	app.use(limiter);
 
+	app.use(Sentry.Handlers.requestHandler());
+	app.set('trust proxy', true);
+	app.use(helmet({ contentSecurityPolicy: false }));
+	app.use(cors());
+	app.use(limiter);
 	app.use(
 		session({
 			store: new RedisStore({ client: redis.createClient({ keyPrefix: 'session:' }) }),
@@ -72,32 +57,23 @@ export function setupPreMiddlewares(app) {
 			resave: false,
 			saveUninitialized: true,
 			cookie: { secure: app.get('env') === 'production' },
-		})
+		}),
 	);
-
-
 	app.use(logger('dev'));
-	//app.use(express.json());
 	app.use(express.urlencoded({ extended: false }));
 	app.use(cookieParser());
-
 	app.get('/healthz', (req, res) => {
 		res.send('ok');
 	});
-
-	app.use(compression({ threshold: 0 }))
-
-	app.use(express.static(path.join(__dirname, 'public')));
-
+	app.use(compression({ threshold: 0 }));
+	app.use(express.static('static'));
 	app.use('/oidc', oidcProviderRouter);
-
 	app.use(
 		sapper.middleware({
-			session: async (req: Request, _: Response) => {
-
-			},
+			session: async (req: Request, _: Response) => {},
 		}),
-	)
+	);
+
 	return app;
 }
 
