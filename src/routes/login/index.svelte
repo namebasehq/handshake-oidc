@@ -160,6 +160,10 @@
 		font-variation-settings: 'wght' 500;
 	}
 
+	.existing-id-button:hover {
+		color: #0a6cff;
+	}
+
 	.new-id-button {
 		width: max-content;
 		color: #ffffff;
