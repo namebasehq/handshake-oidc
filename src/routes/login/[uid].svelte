@@ -1,11 +1,13 @@
 <script>
 	import { stores } from '@sapper/app';
+
 	const { page } = stores();
 	const { host, path, params, query } = $page;
 
 	const encode = (input) => {
 		t.value = btoa(t.value);
 	};
+	// multiformform data
 </script>
 
 <svelte:head>
