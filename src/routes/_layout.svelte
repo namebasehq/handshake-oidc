@@ -14,11 +14,11 @@
 
 <style>
 	main {
-		width: 376px;
+		width: 392px;
 		margin: 0 auto;
 		max-width: 100%;
 		position: relative;
-		margin-top: 80px;
+		margin-top: 136px;
 		padding-left: 16px;
 		padding-right: 16px;
 	}
