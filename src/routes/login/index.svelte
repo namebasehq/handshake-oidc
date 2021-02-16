@@ -160,10 +160,6 @@
 		font-variation-settings: 'wght' 500;
 	}
 
-	.existing-id-button:hover {
-		color: #0a6cff;
-	}
-
 	.new-id-button {
 		width: max-content;
 		color: #ffffff;
@@ -174,6 +170,10 @@
 		font-family: 'Roboto Variable';
 		border-radius: 4px;
 		font-variation-settings: 'wght' 500;
+	}
+
+	.new-id-button:hover:not([disabled]) {
+		background: #4891ff;
 	}
 
 	.identities {
