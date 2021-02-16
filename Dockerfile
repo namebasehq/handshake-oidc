@@ -1,6 +1,8 @@
 FROM node:15-alpine as base
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
+ARG PORT=8080 
+ENV PORT $PORT
 
 WORKDIR /opt/node_app
 
@@ -22,8 +24,8 @@ FROM base as release
 RUN apk add --no-cache tini
 USER node
 WORKDIR /opt/node_app/
-COPY  --chown=node:node --from=deps /opt/node_app/__sapper__/build ./dist
+COPY  --chown=node:node --from=deps /opt/node_app/__sapper__/build ./__sapper__/build
 COPY  --chown=node:node --from=deps /opt/node_app/node_modules ./node_modules
 
-CMD ["/sbin/tini", "node", "./dist" ]
+CMD [ "/sbin/tini", "node", "./__sapper__/build" ]
 
