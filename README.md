@@ -21,8 +21,8 @@ npm run dev
 
 Debug Kubernetes deployment: [see here](https://nb-ops@dev.azure.com/nb-ops/namernews/_git/charts)
 ```
-npm config set hs-id:deploymentName <deploymentName>
-npm config set hs-id:namespace <namespace>
+npm config set handshake-oidc:deploymentName <deploymentName>
+npm config set handshake-oidc:namespace <namespace>
 npm run dev:remote
 ```
 or
