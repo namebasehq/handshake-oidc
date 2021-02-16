@@ -22,8 +22,8 @@ FROM base as release
 RUN apk add --no-cache tini
 USER node
 WORKDIR /opt/node_app/
-COPY  --chown=node:node --from=deps /opt/node_app/__sapper__/build ./dist
+COPY  --chown=node:node --from=deps /opt/node_app/__sapper__/build ./__sapper__/build
 COPY  --chown=node:node --from=deps /opt/node_app/node_modules ./node_modules
 
-CMD ["/sbin/tini", "node", "./dist" ]
+CMD [ "PORT=8080", "/sbin/tini", "node", "./__sapper__/build" ]
 
