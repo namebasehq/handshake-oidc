@@ -42,7 +42,7 @@ export function setupPreMiddlewares(app) {
 	const RedisStore = redisConnect(session);
 	const limiter = rateLimit({
 		windowMs: 15 * 60 * 1000, // 15 minutes
-		max: 100, // limit each IP to 100 requests per windowMs
+		max: 1000, // limit each IP to 100 requests per windowMs
 	});
 
 	app.use(Sentry.Handlers.requestHandler());
@@ -62,6 +62,7 @@ export function setupPreMiddlewares(app) {
 	app.use(logger('dev'));
 	app.use(express.urlencoded({ extended: false }));
 	app.use(cookieParser());
+	app.use(compression({ threshold: 0 }))
 	app.get('/healthz', (req, res) => {
 		res.send('ok');
 	});

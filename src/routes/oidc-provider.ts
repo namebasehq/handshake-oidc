@@ -54,32 +54,31 @@ router.post('/interaction/:uid/manager', setNoCache, body, async (req, res, next
   }
   const url = new URL(baseUrl);
   const data = {
-    action: `/interaction/${uid}/login`,
+    referrer: req.protocol + '://' + req.get('host'),
+    action: `/oidc/interaction/${uid}/login`,
     state: req.session.state,
     id
   };
-  url.searchParams.append('data', hnsUtils.btoa(JSON.stringify(data)))
+  url.hash = `#/login?state=${hnsUtils.btoa(data.state)}&action=${hnsUtils.btoa(data.action)}&id=${hnsUtils.btoa(data.id)}&referrer=${hnsUtils.btoa(data.referrer)}`
   res.redirect(url.toString());
 
 });
 // login request
-router.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) => {
+router.get('/interaction/:uid/login', setNoCache, body, async (req, res, next) => {
   let result = {};
-
   try {
     const {
       prompt: { name },
       params,
     } = await oidc.interactionDetails(req, res);
     assert.strictEqual(name, 'login');
+    let publickey = hnsUtils.atob(req.query.publicKey);
+    let id = hnsUtils.atob(req.query.domain).toLowerCase();
+    let signed = hnsUtils.atob(req.query.signed);
 
-    let publickey = hnsUtils.atob(req.body.publicKey);
-    let id = hnsUtils.atob(req.body.domain).toLowerCase();
-    let signed = hnsUtils.atob(req.body.signed);
+    let fingerprintRecords = await (await hnsUtils.getRecordsAsync('_auth.' + id)).filter(r => r.fingerprint ? true : false);
 
-    let fingerprints = await hnsUtils.getRecordsAsync('_auth.' + id);
-
-    let isFingerprintValid = fingerprints.length > 1 && await hnsUtils.verifyFingerPrint(fingerprints[0], publickey);
+    let isFingerprintValid = fingerprintRecords.length > 0 && await hnsUtils.verifyFingerPrint(fingerprintRecords[0].fingerprint, publickey);
     let crypto = await hnsUtils.importCryptoKey(publickey);
     let isSignatureValid = await hnsUtils.verifySignature(
       crypto,
@@ -100,7 +99,7 @@ router.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) 
         error: 'access_denied',
         error_description: 'Invalid credentials',
       };
-      console.warn('Fingerprint or decryption invalid.');
+      console.warn(`Fingerprint or decryption invalid: isFingerprintValid is ${isFingerprintValid}, isSignatureValid is ${isSignatureValid}`);
     }
     await oidc.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
   } catch (err) {
