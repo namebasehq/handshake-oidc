@@ -26,6 +26,8 @@ USER node
 WORKDIR /opt/node_app/
 COPY  --chown=node:node --from=deps /opt/node_app/__sapper__/build ./__sapper__/build
 COPY  --chown=node:node --from=deps /opt/node_app/node_modules ./node_modules
+COPY --from=build /opt/node_app/static ./static
+
 
 CMD [ "/sbin/tini", "node", "./__sapper__/build" ]
 
