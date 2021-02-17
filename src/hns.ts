@@ -30,7 +30,6 @@ export default {
           }
           return a.v > b.v ? -1 : 1;
         });
-
       return parsedRecords;
     } catch (e) {
       console.warn('invalid hns check', e);

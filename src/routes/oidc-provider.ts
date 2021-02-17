@@ -27,7 +27,7 @@ router.get('/interaction/:uid', setNoCache, async (req, res, next) => {
 
     if (prompt.name === 'login') {
       req.session.state = params.state;
-      return res.redirect(`/login/${uid}`)
+      return res.redirect(`/login#${uid}`)
     }
 
     if (prompt.name === 'consent') {
@@ -46,7 +46,7 @@ router.get('/interaction/:uid', setNoCache, async (req, res, next) => {
 router.post('/interaction/:uid/manager', setNoCache, body, async (req, res, next) => {
   const { uid, prompt, params, session } = await oidc.interactionDetails(req, res);
 
-  let id = req.body.id;
+  let id = hnsUtils.atob(req.body.id);
   let managers = await hnsUtils.getRecordsAsync('_idmanager.' + id);
   let baseUrl = `https://id.namebase.io`;
   if (managers.length > 0) {
@@ -76,9 +76,9 @@ router.get('/interaction/:uid/login', setNoCache, body, async (req, res, next) =
     let id = hnsUtils.atob(req.query.domain).toLowerCase();
     let signed = hnsUtils.atob(req.query.signed);
 
-    let fingerprints = await hnsUtils.getRecordsAsync('_auth.' + id);
+    let fingerprintRecords = await (await hnsUtils.getRecordsAsync('_auth.' + id)).filter(r => r.fingerprint ? true : false);
 
-    let isFingerprintValid = fingerprints.length > 1 && await hnsUtils.verifyFingerPrint(fingerprints[0], publickey);
+    let isFingerprintValid = fingerprintRecords.length > 0 && await hnsUtils.verifyFingerPrint(fingerprintRecords[0].fingerprint, publickey);
     let crypto = await hnsUtils.importCryptoKey(publickey);
     let isSignatureValid = await hnsUtils.verifySignature(
       crypto,
@@ -99,7 +99,7 @@ router.get('/interaction/:uid/login', setNoCache, body, async (req, res, next) =
         error: 'access_denied',
         error_description: 'Invalid credentials',
       };
-      console.warn('Fingerprint or decryption invalid.');
+      console.warn(`Fingerprint or decryption invalid: isFingerprintValid is ${isFingerprintValid}, isSignatureValid is ${isSignatureValid}`);
     }
     await oidc.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
   } catch (err) {
