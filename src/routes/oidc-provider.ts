@@ -62,7 +62,7 @@ router.post('/interaction/:uid/manager', setNoCache, body, async (req, res, next
     state: req.session.state,
     id
   };
-  managerUrl.hash = `#/login?state=${hnsUtils.btoa(data.state)}&id=${hnsUtils.btoa(data.id)}&callbackUrl=${hnsUtils.btoa(data.callbackUrl)}`
+  managerUrl.hash = `#/login?${`state=${hnsUtils.btoa(data.state)}&id=${hnsUtils.btoa(data.id)}&callbackUrl=${hnsUtils.btoa(data.callbackUrl)}`}`;
   res.redirect(managerUrl.toString());
 
 });
