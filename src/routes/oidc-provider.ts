@@ -48,23 +48,26 @@ router.post('/interaction/:uid/manager', setNoCache, body, async (req, res, next
 
   let id = hnsUtils.atob(req.body.id);
   let managers = await hnsUtils.getRecordsAsync('_idmanager.' + id);
-  let baseUrl = `https://id.namebase.io`;
+  let managerUrl = new URL(`https://id.namebase.io`);
   if (managers.length > 0) {
-    baseUrl = managers[0].url;
+    try {
+      managerUrl = new URL(managers[0].url);
+    } catch (e) {
+      console.warn(e)
+    }
   }
-  const url = new URL(baseUrl);
+
   const data = {
-    referrer: req.protocol + '://' + req.get('host'),
-    action: `/oidc/interaction/${uid}/login`,
+    callbackUrl: `${req.protocol}://${req.get('host')}/login/${uid}/challenge`,
     state: req.session.state,
     id
   };
-  url.hash = `#/login?state=${hnsUtils.btoa(data.state)}&action=${hnsUtils.btoa(data.action)}&id=${hnsUtils.btoa(data.id)}&referrer=${hnsUtils.btoa(data.referrer)}`
-  res.redirect(url.toString());
+  managerUrl.hash = `#/login?state=${hnsUtils.btoa(data.state)}&id=${hnsUtils.btoa(data.id)}&callbackUrl=${hnsUtils.btoa(data.callbackUrl)}`
+  res.redirect(managerUrl.toString());
 
 });
 // login request
-router.get('/interaction/:uid/login', setNoCache, body, async (req, res, next) => {
+router.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) => {
   let result = {};
   try {
     const {
@@ -72,13 +75,14 @@ router.get('/interaction/:uid/login', setNoCache, body, async (req, res, next) =
       params,
     } = await oidc.interactionDetails(req, res);
     assert.strictEqual(name, 'login');
-    let publickey = hnsUtils.atob(req.query.publicKey);
-    let id = hnsUtils.atob(req.query.domain).toLowerCase();
-    let signed = hnsUtils.atob(req.query.signed);
+    let publickey = hnsUtils.atob(req.body.publicKey);
+    let id = hnsUtils.atob(req.body.domain).toLowerCase();
+    let signed = hnsUtils.atob(req.body.signed);
+    let deviceId = hnsUtils.atob(req.body.deviceId);
 
-    let fingerprintRecords = await (await hnsUtils.getRecordsAsync('_auth.' + id)).filter(r => r.fingerprint ? true : false);
-
+    let fingerprintRecords = await (await hnsUtils.getRecordsAsync(`${deviceId}._auth.${id}`)).filter(r => r.fingerprint ? true : false);
     let isFingerprintValid = fingerprintRecords.length > 0 && await hnsUtils.verifyFingerPrint(fingerprintRecords[0].fingerprint, publickey);
+
     let crypto = await hnsUtils.importCryptoKey(publickey);
     let isSignatureValid = await hnsUtils.verifySignature(
       crypto,
