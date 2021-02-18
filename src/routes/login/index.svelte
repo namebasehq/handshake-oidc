@@ -46,6 +46,7 @@
 				<TextInput
 					id="new-id"
 					name="new-id"
+					autocomplete="username"
 					bind:value={newIdentityValue}
 					placeholder="Enter a Handshake name that you own*"
 				/>
