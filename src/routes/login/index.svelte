@@ -2,35 +2,17 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import TextInput from '../../components/TextInput.svelte';
-
-	const handballToIdManager = (uidHash: string, identity: string) => {
-		const form = document.createElement('form');
-		form.setAttribute('action', `/oidc/interaction/${uidHash}/manager`);
-		form.setAttribute('method', 'POST');
-
-		const idInput = document.createElement('input');
-		idInput.setAttribute('type', 'hidden');
-		idInput.setAttribute('name', 'id');
-		idInput.setAttribute('value', btoa(identity));
-
-		form.appendChild(idInput);
-		document.body.appendChild(form);
-		form.submit();
-	};
 </script>
 
 <script lang="ts">
 	let uidHash: string | null = null;
 	let newIdentityValue: string = '';
+	let btoaNewIdentityValue: string = '';
 
 	onMount(() => {
 		if (typeof window === 'undefined') return;
 		uidHash = window.location.hash.substring(1);
 	});
-
-	const onNewIdentityClick = () => {
-		handballToIdManager(uidHash, newIdentityValue);
-	};
 </script>
 
 <svelte:head>
@@ -41,31 +23,40 @@
 	<div class="identities" transition:fade|local={{ duration: 185 }}>
 		<h1>Log in</h1>
 		<div>
-			<label for="new-id">Your Handshake name</label>
-			<div class="input">
-				<TextInput
-					id="new-id"
-					name="new-id"
-					autocomplete="username"
-					autocorrect="off"
-					autocapitalize="none"
-					bind:value={newIdentityValue}
-					placeholder="Enter a Handshake name that you own*"
-				/>
-			</div>
-			<div style="display: flex; justify-content: space-between;">
-				<div class="free-handshake-name">
-					<div>Don't have a Handshake name?</div>
-					<a
-						href="https://6cqg3vy1fsb.typeform.com/to/famUtbd0"
-						target="_blank"
-						rel="noopener noreferrer">Request one for free</a
-					>
+			<form action={`/oidc/interaction/${uidHash}/manager`} method="POST" autocomplete="on">
+				<label for="id">Your Handshake name</label>
+				<div class="input">
+					<input type="hidden" name="id" bind:value={btoaNewIdentityValue} />
+					<TextInput
+						id="username"
+						name="username"
+						type="text"
+						autocomplete="username"
+						autocorrect="off"
+						autocapitalize="none"
+						bind:value={newIdentityValue}
+						placeholder="Enter a Handshake name that you own*"
+					/>
 				</div>
-				<button class="new-id-button" on:click={onNewIdentityClick} disabled={!newIdentityValue}>
-					Continue
-				</button>
-			</div>
+				<div style="display: flex; justify-content: space-between;">
+					<div class="free-handshake-name">
+						<div>Don't have a Handshake name?</div>
+						<a
+							href="https://6cqg3vy1fsb.typeform.com/to/famUtbd0"
+							target="_blank"
+							rel="noopener noreferrer">Request one for free</a
+						>
+					</div>
+					<button
+						type="submit"
+						on:click={() => (btoaNewIdentityValue = btoa(newIdentityValue))}
+						class="new-id-button"
+						disabled={!newIdentityValue}
+					>
+						Continue
+					</button>
+				</div>
+			</form>
 		</div>
 	</div>
 {/if}
