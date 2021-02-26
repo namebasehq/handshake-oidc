@@ -11,11 +11,11 @@ export default {
   btoa: btoa,
 
   async getRecordsAsync(id) {
-    let regex = /([^;]+)=([^;]*)/g;
+    const regex = /([^;]+)=([^;]*)/g;
     try {
       // @ts-ignore
       const txts: string[] = await hdns.resolveTxt(id, { all: true });
-      let parsedRecords = txts
+      const parsedRecords = txts
         .map((txt) => {
           const params: Record<string, any> = {};
           let match: RegExpExecArray = null;

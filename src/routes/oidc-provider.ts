@@ -1,11 +1,10 @@
 import assert from 'assert';
-import express from 'express';
-const router = express.Router();
-import { urlencoded } from 'express';
-const body = urlencoded({ extended: false });
-
+import express, { urlencoded } from 'express';
 import hnsUtils from '../hns';
 import oidc from '../oidc';
+const router = express.Router();
+const body = urlencoded({ extended: false });
+
 
 declare module 'express-session' {
   export interface Session {
@@ -80,11 +79,22 @@ router.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) 
     let signed = hnsUtils.atob(req.body.signed);
     let deviceId = hnsUtils.atob(req.body.deviceId);
 
-    let fingerprintRecords = await (await hnsUtils.getRecordsAsync(`${deviceId}._auth.${id}`)).filter(r => r.fingerprint ? true : false);
-    let isFingerprintValid = fingerprintRecords.length > 0 && await hnsUtils.verifyFingerPrint(fingerprintRecords[0].fingerprint, publickey);
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    
+    let attempt = 3;
+    let isFingerprintValid = false;
+    while (attempt-- !== 0) {
+      const fingerprintRecords = (await hnsUtils.getRecordsAsync(`${deviceId}._auth.${id}`)).filter(r => r.fingerprint ? true : false);
+      isFingerprintValid = fingerprintRecords.length > 0 && await hnsUtils.verifyFingerPrint(fingerprintRecords[0].fingerprint, publickey); if (isFingerprintValid) {
+        break;
+      } else {
+        await sleep(300);
+      }
+    }
 
-    let crypto = await hnsUtils.importCryptoKey(publickey);
-    let isSignatureValid = await hnsUtils.verifySignature(
+
+    const crypto = await hnsUtils.importCryptoKey(publickey);
+    const isSignatureValid = await hnsUtils.verifySignature(
       crypto,
       signed,
       req.session.state);

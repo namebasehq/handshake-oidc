@@ -1,8 +1,11 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import { stores } from '@sapper/app';
-	const { page } = stores();
-	const { host, path, params, query } = $page;
 	import { onMount } from 'svelte';
+</script>
+
+<script lang="ts">
+	const { page } = stores();
+	const { params } = $page;
 
 	onMount(async () => {
 		const hash = window.location.hash.substr(1);
@@ -30,3 +33,22 @@
 		form.submit();
 	});
 </script>
+
+<h1 class="text-roboto-mono text-variant-huge text-weight-medium">Log in</h1>
+<div class="container" style="display: flex; align-items: center; justify-content: space-between">
+	<div class="text-roboto-mono text-variant-medium text-weight-medium">One moment please...</div>
+</div>
+
+<style>
+	h1 {
+		color: white;
+		text-align: center;
+		margin-bottom: 48px;
+	}
+
+	.container > div {
+		text-align: center;
+		color: white;
+		flex: 1;
+	}
+</style>
