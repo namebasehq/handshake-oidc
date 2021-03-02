@@ -99,7 +99,7 @@ export default {
     let signature = await subtle.sign(
       {
         name: 'RSA-PSS',
-        saltLength: 128,
+        saltLength: 64,
       },
       privateKey,
       this._encodeMessage(data)
@@ -115,7 +115,7 @@ export default {
     return await subtle.verify(
       {
         name: 'RSA-PSS',
-        saltLength: 128,
+        saltLength: 64,
       },
       publicKey,
       binaryDer,
