@@ -1,8 +1,8 @@
 import hdns from 'hdns';
-import { hsd_resolvers, isDevelopment } from './config';
+import { hsd_resolvers } from './config';
 const { subtle } = require('crypto').webcrypto;
 
-hdns.setServers(isDevelopment ? ["103.196.38.38"] : hsd_resolvers);
+hdns.setServers(hsd_resolvers);
 
 const btoa = (str) => Buffer.from(str, 'binary').toString('base64');
 const atob = (str) => Buffer.from(str, 'base64').toString('binary');
