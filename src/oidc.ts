@@ -1,15 +1,12 @@
+import type { JSONWebKeySet } from 'jose';
+import { JWK, JWKS } from 'jose';
 import {
-  Provider,
-  Configuration,
-  KoaContextWithOIDC,
   CanBePromise,
-  ClientMetadata,
+  ClientMetadata, Configuration, interactionPolicy, KoaContextWithOIDC, Provider
 } from 'oidc-provider';
-import { interactionPolicy } from 'oidc-provider';
-import { config } from './config';
-import { skipPolicy } from './skip-policy';
+import { oidc as config } from './config';
 import { RedisAdapter } from './redis-adapter';
-
+import { skipPolicy } from './skip-policy';
 // create a requestable prompt with no implicit checks
 const Prompt = interactionPolicy.Prompt;
 const policy = interactionPolicy.base;
@@ -38,7 +35,15 @@ const audiences = (
   const client = config.oidc_provider_clients.find((c) => c.client_id == token?.clientId);
   return client?.audience;
 };
-
+const getJWKS = (): JSONWebKeySet => {
+  const keystore = new JWKS.KeyStore(config.jwks.map(k => JWK.asKey(k)));
+  if (keystore.size === 0) {
+    keystore.generateSync('RSA', 4096, { alg: 'RS512', use: 'sig' });
+    keystore.generateSync('RSA', 4096, { alg: 'RS512', use: 'enc' });
+    console.log('add these keys to OIDC_JWKS\r\n', keystore.toJWKS(true));
+  }
+  return keystore.toJWKS(true);
+}
 const configuration: Configuration = {
   adapter: RedisAdapterFactory,
   cookies: {
@@ -57,6 +62,7 @@ const configuration: Configuration = {
   },
   audiences: audiences,
   clients: <ClientConfig[]>config.oidc_provider_clients,
+  jwks: getJWKS(),
   features: {
     devInteractions: { enabled: false }, // defaults to true
     deviceFlow: { enabled: true }, // defaults to false
@@ -94,9 +100,10 @@ const configuration: Configuration = {
   },
 };
 
+
 const oidc = new Provider(`https://${config.host}/`, configuration);
 oidc.proxy = true;
 
 skipPolicy(oidc);
 
-export default oidc;
+export default oidc
