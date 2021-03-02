@@ -1,6 +1,6 @@
-import { redis } from './redis-client';
 import { isEmpty } from 'lodash';
 import type { Adapter } from 'oidc-provider';
+import { redis } from './redis-client';
 
 export const client = redis.createClient({ keyPrefix: 'oidc:' });
 
@@ -32,6 +32,7 @@ export class RedisAdapter implements Adapter {
       : JSON.stringify(payload);
 
     const multi = client.multi();
+    // @ts-ignore
     multi[consumable.has(this.name) ? 'hmset' : 'set'](key, store);
 
     if (expiresIn) {
