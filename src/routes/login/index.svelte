@@ -13,6 +13,11 @@
 		if (typeof window === 'undefined') return;
 		uidHash = window.location.hash.substring(1);
 	});
+
+	const formatIdentityValue = () => {
+		const formatted = newIdentityValue.replace(/\//g, '');
+		return formatted;
+	};
 </script>
 
 <svelte:head>
@@ -49,7 +54,7 @@
 					</div>
 					<button
 						type="submit"
-						on:click={() => (btoaNewIdentityValue = btoa(newIdentityValue))}
+						on:click={() => (btoaNewIdentityValue = btoa(formatIdentityValue()))}
 						class="new-id-button"
 						disabled={!newIdentityValue}
 					>
