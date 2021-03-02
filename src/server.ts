@@ -1,12 +1,10 @@
 import express from 'express';
-import { config } from './config'
-import { setupPreMiddlewares, setupPostMiddlewares } from './startup';
-
-const { PORT } = process.env;
+import { port } from './config';
+import { setupPostMiddlewares, setupPreMiddlewares } from './startup';
 
 const server = express();
 setupPreMiddlewares(server);
 setupPostMiddlewares(server);
-server.listen(config.port, () => {
-	console.log(`server listening port ${config.port}`);
+server.listen(port, () => {
+	console.log(`server listening port ${port}`);
 });
