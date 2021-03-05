@@ -80,12 +80,13 @@ router.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) 
     let deviceId = hnsUtils.atob(req.body.deviceId);
 
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    
+
     let attempt = 3;
     let isFingerprintValid = false;
     while (attempt-- !== 0) {
       const fingerprintRecords = (await hnsUtils.getRecordsAsync(`${deviceId}._auth.${id}`)).filter(r => r.fingerprint ? true : false);
-      isFingerprintValid = fingerprintRecords.length > 0 && await hnsUtils.verifyFingerPrint(fingerprintRecords[0].fingerprint, publickey); if (isFingerprintValid) {
+      isFingerprintValid = fingerprintRecords.length > 0 && await hnsUtils.verifyFingerPrint(fingerprintRecords[0].fingerprint, publickey);
+      if (isFingerprintValid) {
         break;
       } else {
         await sleep(300);

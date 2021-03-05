@@ -13,7 +13,10 @@ import helmet from 'helmet';
 import logger from 'morgan';
 import { config, sentry } from './config';
 import { redis } from './redis-client';
+// routes
 import oidcProviderRouter from './routes/oidc-provider';
+import validateRouter from './routes/validate';
+
 
 export type SapperSession = {};
 
@@ -67,6 +70,7 @@ export function setupPreMiddlewares(app) {
 
 	app.use(compression({ threshold: 0 }));
 	app.use(express.static('static'));
+	app.use('/validate', validateRouter);
 	app.use('/oidc', oidcProviderRouter);
 	app.use(
 		sapper.middleware({
