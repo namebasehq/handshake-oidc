@@ -47,7 +47,7 @@
 					<div class="free-handshake-name">
 						<div>Don't have a Handshake name?</div>
 						<a
-							href="https://6cqg3vy1fsb.typeform.com/to/famUtbd0"
+							href="https://help.namebase.io/article/xkmc3ftupd-getting-a-free-handshake-name"
 							target="_blank"
 							rel="noopener noreferrer">Request one for free</a
 						>
