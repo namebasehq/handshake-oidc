@@ -24,13 +24,5 @@ export const sentry =
   process.env.SENTRY_DSN ||
   'https://18299348c6fe4526a9541c13096d6a1c@o186808.ingest.sentry.io/1282756';
 
-export const hsd_resolvers = ["103.196.38.38", "103.196.38.39"];
-
-// // fullnode
-// export const hsd_resolvers = [
-//   process.env[
-//   (process.env.RELEASE_NAME || '').replace(/[\W_]/g, '_').toUpperCase() +
-//   '_HSD_FULLNODE_SERVICE_HOST'
-//   ],
-// ];
+export const hsdResolvers = ["103.196.38.38", "103.196.38.39"];
 

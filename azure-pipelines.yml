@@ -28,7 +28,3 @@ stages:
       - template: docker.yml@repoDeploy
         parameters:
           imagename: 'hs-id-provider'
-
-# - template: azure-pipelines.yml@repoDeploy
-#   parameters:
-#     repository: '866123855895.dkr.ecr.us-east-2.amazonaws.com/hs-id-provider'

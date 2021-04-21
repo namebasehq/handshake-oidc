@@ -3,8 +3,8 @@
   "description": "OIDC provider using handshake name resolution",
   "version": "0.0.1",
   "config": {
-    "deploymentName": "namernews-jx-dev-oidc",
-    "namespace": "namernews-jx-dev"
+    "deploymentName": "oidc",
+    "namespace": "oidc"
   },
   "scripts": {
     "dev": "NODE_ENV=development PORT=8080 sapper dev",

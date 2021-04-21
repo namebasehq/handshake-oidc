@@ -1,4 +1,5 @@
 FROM node:15-alpine as base
+
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
 ARG PORT=8080 
